@@ -56,7 +56,7 @@ function MainExecutor() {
       log("打开支付宝");
       sleep(1000 / speed)
       if (set.indexOf("每日签到完成") == -1) {
-        每日签到()
+        //每日签到()
       }
 
       common.clickByText("首页", 2000 / speed);
