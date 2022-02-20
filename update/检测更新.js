@@ -32,110 +32,110 @@ let apiUrl = null
 let downloader = null
 if (chose === 0) {
   toastLog('使用Github Release 作为更新源')
-  apiUrl = 'https://api.github.com/repos/${user}/${repo}/releases/latest'
+  apiUrl = 'https://api.github.com/repos/fan0629/Barbara-Farm/releases/latest'
   downloader = new GithubReleaseDownloader()
 } else {
   toastLog('使用Gitee Release 作为更新源')
-  apiUrl = 'https://gitee.com/api/v5/repos/${user}/${repo}/releases/latest'
-  // 设置包前缀，更新包所在的仓库 
-  downloader = new GiteeReleaseDownloader('Ant-Forest-', 'https://gitee.com/${user}/${repo}/raw/master/')
+  apiUrl = 'https://gitee.com/api/v5/repos/zhang_fan0629/Barbara-Farm/releases/latest'
+  // 设置包前缀，更新包所在的仓库
+  downloader = new GiteeReleaseDownloader('Barbara-Farm-', 'https://gitee.com/zhang_fan0629/Barbara-Farm/raw/master/')
 }
 if (is_pro) {
   let origin = {}
   let new_object = {}
   downloader.setJsonResolver(new JSONResolver({
-    /**
-     * 将对象转换成 JSON字符串
-     *
-     * @param obj
-     * @return jsonString
-     */
-    toJSONString (obj) {
-      return JSON.stringify(obj)
-    },
+        /**
+         * 将对象转换成 JSON字符串
+         *
+         * @param obj
+         * @return jsonString
+         */
+        toJSONString (obj) {
+          return JSON.stringify(obj)
+        },
 
-    /**
-     * 根据json字符串获取 指定json key内容 并转为String
-     *
-     * @param jsonString
-     * @param name       key
-     * @return
-     */
-    getString: function (jsonString, name) {
-      if (arguments.length === 2) {
-        let v = JSON.parse(jsonString)[name]
-        return v ? v.toString() : ''
-      } else {
-        let v = origin[arguments[0]]
-        return v ? v.toString() : ''
-      }
-    },
+        /**
+         * 根据json字符串获取 指定json key内容 并转为String
+         *
+         * @param jsonString
+         * @param name       key
+         * @return
+         */
+        getString: function (jsonString, name) {
+          if (arguments.length === 2) {
+            let v = JSON.parse(jsonString)[name]
+            return v ? v.toString() : ''
+          } else {
+            let v = origin[arguments[0]]
+            return v ? v.toString() : ''
+          }
+        },
 
-    /**
-     * 可以嵌套调用 获取对象，不转为String
-     *
-     * @param jsonString
-     * @param name
-     * @return
-     */
-    getObject (jsonString, name) {
-      return JSON.parse(jsonString)[name]
-    },
+        /**
+         * 可以嵌套调用 获取对象，不转为String
+         *
+         * @param jsonString
+         * @param name
+         * @return
+         */
+        getObject (jsonString, name) {
+          return JSON.parse(jsonString)[name]
+        },
 
-    //---------------
+        //---------------
 
-    /**
-     * 设置原始JSONString
-     *
-     * @param jsonString
-     * @return
-     */
-    setOrigin: function (jsonString) {
-      origin = JSON.parse(jsonString)
-      return this
-    },
+        /**
+         * 设置原始JSONString
+         *
+         * @param jsonString
+         * @return
+         */
+        setOrigin: function (jsonString) {
+          origin = JSON.parse(jsonString)
+          return this
+        },
 
-    getString: function (name) {
-      if (arguments.length === 2) {
-        let jsonString = arguments[0]
-        name = arguments[1]
-        let v = JSON.parse(jsonString)[name]
-        return v ? v.toString() : ''
-      } else {
-        let v = origin[name]
-        return v ? v.toString() : ''
-      }
-    },
+        getString: function (name) {
+          if (arguments.length === 2) {
+            let jsonString = arguments[0]
+            name = arguments[1]
+            let v = JSON.parse(jsonString)[name]
+            return v ? v.toString() : ''
+          } else {
+            let v = origin[name]
+            return v ? v.toString() : ''
+          }
+        },
 
-    getObject: function (name) {
-      return origin[name]
-    },
+        getObject: function (name) {
+          return origin[name]
+        },
 
-    //---------------
+        //---------------
 
-    /**
-     * 创建新的封装 内部new一个Map 创建JSON对象
-     *
-     * @return
-     */
-    newObject: function () {
-      new_object = {}
-      return this
-    },
-    put: function (name, value) {
-      new_object[name] = value
-      return this
-    },
+        /**
+         * 创建新的封装 内部new一个Map 创建JSON对象
+         *
+         * @return
+         */
+        newObject: function () {
+          new_object = {}
+          return this
+        },
+        put: function (name, value) {
+          new_object[name] = value
+          return this
+        },
 
-    /**
-     * 将创建的JSON对象转换成字符串
-     *
-     * @return
-     */
-    toJSONString: function () {
-      return JSON.stringify(new_object)
-    }
-  })
+        /**
+         * 将创建的JSON对象转换成字符串
+         *
+         * @return
+         */
+        toJSONString: function () {
+          return JSON.stringify(new_object)
+        }
+      })
   )
 }
 
@@ -167,10 +167,10 @@ loadingDialog = dialogs.build({
   title: '正在从' + (chose == 0 ? 'Github' : 'Gitee') + '获取更新信息',
   content: '加载中，请稍等...'
 })
-  .on('negative', () => {
-    exit()
-  })
-  .show()
+    .on('negative', () => {
+      exit()
+    })
+    .show()
 let summary = downloader.getUpdateSummary()
 if (summary === null) {
   loadingDialog.setContent('无法获取release版本信息，请多试几次或者切换更新源')
@@ -198,9 +198,9 @@ let downloadDialog = dialogs.build({
     showMinMax: false
   }
 })
-  .on('negative', () => {
-    exit()
-  })
+    .on('negative', () => {
+      exit()
+    })
 
 downloader.setListener(new DownloaderListener({
   updateGui: function (string) {
@@ -257,15 +257,15 @@ dialogs.build({
   negativeColor: 'red',
   positiveColor: '#f9a01c',
 })
-  .on('negative', () => {
-    exit()
-  })
-  .on('neutral', () => {
-    downloadDialog.show()
-    threads.start(function () { downloadingExecutor(true) })
-  })
-  .on('positive', () => {
-    downloadDialog.show()
-    threads.start(function () { downloadingExecutor(false) })
-  })
-  .show()
+    .on('negative', () => {
+      exit()
+    })
+    .on('neutral', () => {
+      downloadDialog.show()
+      threads.start(function () { downloadingExecutor(true) })
+    })
+    .on('positive', () => {
+      downloadDialog.show()
+      threads.start(function () { downloadingExecutor(false) })
+    })
+    .show()
