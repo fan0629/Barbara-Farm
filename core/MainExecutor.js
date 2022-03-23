@@ -22,15 +22,12 @@ function MainExecutor() {
                 450000 / speed);
         });
 
-        common.unlock("1998");
-
         if (!requestScreenCapture()) {
             toast("请求截图失败");
             stop();
         }
 
         main();
-
 
         function main() {
             threads.start(function () {
