@@ -4,9 +4,10 @@ function MainExecutor() {
 
     this.exec = function () {
         // 执行主要业务逻辑
-        auto();
-        setScreenMetrics(1080, 2340);
-
+        let singletonRequire = require('../lib/SingletonRequirer.js')(runtime, this)
+        let commonFunctions = singletonRequire('CommonFunction')
+        commonFunctions.requestScreenCaptureOrRestart()
+        commonFunctions.ensureDeviceSizeValid()
         var speed = 0.8; //脚本速度倍率
         var WIDTH = device.width == 0 ? 1080 : device.width;
         var HEIGHT = device.height == 0 ? 2340 : device.height;
