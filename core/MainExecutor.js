@@ -22,11 +22,6 @@ function MainExecutor() {
                 450000 / speed);
         });
 
-        if (!requestScreenCapture()) {
-            toast("请求截图失败");
-            stop();
-        }
-
         main();
 
         function main() {
