@@ -193,18 +193,23 @@ function MainExecutor() {
                             sleep(15000)
                             textContains("全部完成啦").findOne(5000 / speed);
                             back();
-                            sleep(1000 / speed)
                         } else if (task_info == "走走路就轻松赚到钱(0/1)") {
                             continue;
                         }
-
                     } else if (btn_text == "去浏览") {
-                        common.clickUiObject(btn)
-                        sleep(16000)
-                        textContains("全部完成啦").findOne(5000 / speed);
-                        sleep(1000)
-                        back();
-                        sleep(1000 / speed)
+                        if (task_info == "搜一搜你心仪的宝贝(0/1)") {
+                            common.clickByDesc("卫衣");
+                            sleep(12000);
+                            back();
+                            sleep(1000);
+                            back();
+                        } else {
+                            common.clickUiObject(btn)
+                            sleep(16000)
+                            textContains("全部完成啦").findOne(5000 / speed);
+                            sleep(1000)
+                            back();
+                        }
                     } else if (btn_text == "去逛逛") {
                         if (task_info == "逛逛支付宝芭芭农场(0/1)" && j == 2) {
                             common.clickUiObject(btn);
