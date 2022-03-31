@@ -299,7 +299,7 @@ function MainExecutor() {
         }
 
         function getButtons() {
-            return className("android.widget.Button").depth(17).find();
+            return className("android.widget.Button").depth(17).textMatches(/去浏览|去完成|去逛逛/).find();
         }
 
         function 每日签到() {
