@@ -199,6 +199,7 @@ function MainExecutor() {
                     } else if (btn_text == "去浏览") {
                         if (task_info == "搜一搜你心仪的宝贝(0/1)") {
                             common.clickByDesc("卫衣");
+                            common.clickByText("卫衣", 1000);
                             sleep(12000);
                             back();
                             sleep(1000);
