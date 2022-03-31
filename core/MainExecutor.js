@@ -174,13 +174,12 @@ function MainExecutor() {
                     }
                     let btn = list.get(i)
                     let btn_text = btn.text()
-                    log("第" + j + "次循环")
                     var task_info = btn.parent().child(0).child(0).text();
                     if (task_info.includes("下单")) {
                         log("结束本次循环")
                         continue;
                     }
-                    log(task_info)
+                    toastLog(task_info)
                     switch (task_info) {
                         case "浏览天天领现金(0/1)":
                             common.clickUiObject(btn)
@@ -192,9 +191,10 @@ function MainExecutor() {
                             break;
                         case "搜一搜你心仪的宝贝(0/1)":
                             common.clickUiObject(btn)
-                            common.clickByDesc("卫衣");
-                            common.clickByText("卫衣", 1000);
-                            sleep(12000);
+                            sleep(800)
+                            common.clickByDesc("卫衣", 500);
+                            common.clickByText("卫衣", 500);
+                            sleep(15000);
                             back();
                             sleep(1000);
                             back();
@@ -205,14 +205,14 @@ function MainExecutor() {
                             sleep(1000 / speed);
                             swipe(500, 1800, 500, 1200, 2000);
                             sleep(12000);
-                            textContains("浏览完成，现在下单").findOne(5000 / speed);
-                            back();
+                            textContains("任务完成").findOne(5000 / speed);
                             sleep(1000 / speed);
+                            back();
                             break;
                         default:
                             if (btn_text == "去浏览") {
                                 common.clickUiObject(btn);
-                                sleep(16000);
+                                sleep(15000);
                                 textContains("全部完成啦").findOne(5000 / speed);
                                 sleep(1000);
                                 back();
@@ -228,6 +228,7 @@ function MainExecutor() {
                                 log("跳过任务");
                             }
                     }
+                    sleep(800)
                 }
             }
 
