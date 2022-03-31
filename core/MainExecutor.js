@@ -8,7 +8,7 @@ function MainExecutor() {
         let commonFunctions = singletonRequire('CommonFunction')
         commonFunctions.requestScreenCaptureOrRestart()
         commonFunctions.ensureDeviceSizeValid()
-        var speed = 0.8; //脚本速度倍率
+        var speed = 0.9; //脚本速度倍率
         var WIDTH = device.width == 0 ? 1080 : device.width;
         var HEIGHT = device.height == 0 ? 2340 : device.height;
         var storage = storages.create("com.fan.芭芭农场"); //获取本地存储
@@ -55,11 +55,7 @@ function MainExecutor() {
             common.clickByText("首页", 2000 / speed);
             var uiObject = boundsInside(0, 300, 1080, 1500).text("芭芭农场").findOne();
             common.clickUiObject(uiObject);
-            text("🇨🇳🏅+…").findOne(4000 / speed);
-            sleep(1000 / speed)
-            if (text("去淘宝开宝箱").exists()) {
-                common.clickUiObject(text("去淘宝开宝箱").findOne().parent().parent().parent().child(1))
-            }
+            sleep(1500 / speed)
             let dailyPoint = findColorEquals(captureScreen(), 0x8b4100, WIDTH / 2, HEIGHT / 2, WIDTH / 2, HEIGHT / 2)
             toastLog("点击领取每日肥料")
             if (dailyPoint) {
@@ -86,7 +82,6 @@ function MainExecutor() {
                         common.clickUiObject(className("android.widget.Image").depth(16).untilFind().get(1));
                     }
                     let index = textMatches(/逛一逛领1500肥料 \(.\/3\)/).findOne().indexInParent()
-                    toastLog(index)
                     common.clickUiObject(className("android.view.View").depth(17).indexInParent(index + 2).findOne().child(0))
                     sleep(2500)
                     swipe(500, 1600, 500, 1000, 2000)
@@ -124,7 +119,7 @@ function MainExecutor() {
             text("天猫农场-福年种福果").findOne(1000 / speed);
             sleep(5000 / speed);
             common.killApp("淘宝");
-            sleep(2000 / speed)
+            sleep(1000 / speed)
             launchApp("淘宝")
             if (id("android.miui:id/app1").findOne(3000 / speed)) {
                 id("android.miui:id/app1").findOne().click();
@@ -138,10 +133,10 @@ function MainExecutor() {
             }
             sleep(1000)
             common.clickByDesc("芭芭农场", 1000 / speed)
-            sleep(2000 / speed)
+            sleep(3000 / speed)
             for (var i = 0; i < 4; i++) {
-                common.clickUiObject(text("继续赚肥料").findOne(1000 / speed));
-                common.clickUiObject(text("关闭").findOne(1000 / speed));
+                common.clickUiObject(text("继续赚肥料").findOnce());
+                common.clickUiObject(text("关闭").findOnce());
                 common.clickUiObject(text("继续努力").findOnce());
                 if (common.clickUiObject(text("立即领取").findOnce())) {
                     sleep(1000)
@@ -198,6 +193,7 @@ function MainExecutor() {
                         }
                     } else if (btn_text == "去浏览") {
                         if (task_info == "搜一搜你心仪的宝贝(0/1)") {
+                            common.clickUiObject(btn)
                             common.clickByDesc("卫衣");
                             common.clickByText("卫衣", 1000);
                             sleep(12000);
