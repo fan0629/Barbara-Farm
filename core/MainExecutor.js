@@ -174,25 +174,23 @@ function MainExecutor() {
                     }
                     let btn = list.get(i)
                     let btn_text = btn.text()
-                    log("第" + i + "次循环")
+                    log("第" + j + "次循环")
                     var task_info = btn.parent().child(0).child(0).text();
                     if (task_info.includes("下单")) {
                         log("结束本次循环")
                         continue;
                     }
-                    if (btn_text == "去完成") {
-                        if (task_info == "浏览天天领现金(0/1)") {
+                    log(task_info)
+                    switch (task_info) {
+                        case "浏览天天领现金(0/1)":
                             common.clickUiObject(btn)
                             sleep(1500)
                             click(990, 588);
                             sleep(15000)
                             textContains("全部完成啦").findOne(5000 / speed);
                             back();
-                        } else if (task_info == "走走路就轻松赚到钱(0/1)") {
-                            continue;
-                        }
-                    } else if (btn_text == "去浏览") {
-                        if (task_info == "搜一搜你心仪的宝贝(0/1)") {
+                            break;
+                        case "搜一搜你心仪的宝贝(0/1)":
                             common.clickUiObject(btn)
                             common.clickByDesc("卫衣");
                             common.clickByText("卫衣", 1000);
@@ -200,39 +198,44 @@ function MainExecutor() {
                             back();
                             sleep(1000);
                             back();
-                        } else {
-                            common.clickUiObject(btn)
-                            sleep(16000)
-                            textContains("全部完成啦").findOne(5000 / speed);
-                            sleep(1000)
-                            back();
-                        }
-                    } else if (btn_text == "去逛逛") {
-                        if (task_info == "逛逛支付宝芭芭农场(0/1)" && j == 2) {
-                            common.clickUiObject(btn);
-                            施肥()
-                            //common.closeCurrentApp();
-                        } else if (task_info.includes("淘宝人生")) {
-                            common.clickUiObject(btn);
-                            text("淘宝人生").findOne(4000 / speed)
-                            sleep(7000 / speed);
-                            click(500, 2000);
-                            sleep(4000 / speed);
-                            back();
-                            sleep(1500 / speed);
-                        } else if (task_info == "逛精选好物(0/1)") {
+                            break;
+                        case "逛精选好物(0/1)":
+                        case "逛精选好货(0/1)":
                             common.clickUiObject(btn);
                             sleep(1000 / speed);
                             swipe(500, 1800, 500, 1200, 2000);
-                            sleep(12000)
+                            sleep(12000);
                             textContains("浏览完成，现在下单").findOne(5000 / speed);
                             back();
                             sleep(1000 / speed);
-                        }
+                            break;
+                        default:
+                            if (btn_text == "去浏览") {
+                                common.clickUiObject(btn);
+                                sleep(16000);
+                                textContains("全部完成啦").findOne(5000 / speed);
+                                sleep(1000);
+                                back();
+                            } else if (task_info.includes("淘宝人生")) {
+                                common.clickUiObject(btn);
+                                text("淘宝人生").findOne(4000 / speed)
+                                sleep(7000 / speed);
+                                click(500, 2000);
+                                sleep(4000 / speed);
+                                back();
+                                sleep(1500 / speed);
+                            } else {
+                                log("跳过任务");
+                            }
                     }
                 }
             }
-            common.clickByText("跳转链接")
+
+            if (text("逛逛支付宝芭芭农场(0/1)").exists()) {
+                common.clickByText("逛逛支付宝芭芭农场(0/1)");
+            } else {
+                common.clickByText("跳转链接")
+            }
             施肥()
         }
 
