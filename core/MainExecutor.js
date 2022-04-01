@@ -133,8 +133,8 @@ function MainExecutor() {
                 sleep(1000)
             }
             sleep(1000)
-            common.clickByDesc("芭芭农场", 1000 / speed)
-            sleep(3000 / speed)
+            common.clickByDesc("芭芭农场")
+            className("android.widget.Image").text("头像").findOne(3000 / speed)
             for (var i = 0; i < 4; i++) {
                 common.clickUiObject(text("继续赚肥料").findOnce());
                 common.clickUiObject(text("关闭").findOnce());
@@ -152,6 +152,7 @@ function MainExecutor() {
                         }
                     }
                 }
+                sleep(300 / speed)
             }
             log("点击领取每日肥料")
             let taobaoDailyPoint = findColorEquals(captureScreen(), 0x8b4100, WIDTH / 2, HEIGHT / 2, WIDTH / 2, HEIGHT / 2)
@@ -205,8 +206,8 @@ function MainExecutor() {
                             common.clickUiObject(btn);
                             sleep(1000 / speed);
                             swipe(500, 1800, 500, 1200, 2000);
-                            sleep(12000);
-                            textContains("任务完成").findOne(5000 / speed);
+                            sleep(15000);
+                            //textContains("任务完成").findOne(5000 / speed);
                             sleep(1000 / speed);
                             back();
                             break;
