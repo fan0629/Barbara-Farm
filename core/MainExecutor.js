@@ -55,7 +55,8 @@ function MainExecutor() {
             common.clickByText("首页", 2000 / speed);
             var uiObject = boundsInside(0, 300, 1080, 1500).text("芭芭农场").findOne();
             common.clickUiObject(uiObject);
-            sleep(1500 / speed)
+            text("🇨🇳🏅+…").findOne(4000 / speed);
+            sleep(1000 / speed)
             let dailyPoint = findColorEquals(captureScreen(), 0x8b4100, WIDTH / 2, HEIGHT / 2, WIDTH / 2, HEIGHT / 2)
             toastLog("点击领取每日肥料")
             if (dailyPoint) {
