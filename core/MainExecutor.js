@@ -77,22 +77,35 @@ function MainExecutor() {
             });
             sleep(1000 / speed);
 
-            for (let i = 0; i < 3; i++) {
-                if (!textMatches(/逛一逛领1500肥料 \(3\/3\)/).exists()) {
-                    if (!textMatches(/逛一逛领1500肥料 \(.\/3\)/).findOne(1000)) {
-                        common.clickUiObject(className("android.widget.Image").depth(16).untilFind().get(1));
+            for (let i = 0; i < 4; i++) {
+                for (let j = 0; j < 10; j++) {
+                    let task_list = getZfbTask();
+                    if (j >= task_list.length) {
+                        break;
                     }
-                    let index = textMatches(/逛一逛领1500肥料 \(.\/3\)/).findOne().indexInParent()
-                    common.clickUiObject(className("android.view.View").depth(17).indexInParent(index + 2).findOne().child(0))
-                    sleep(2500)
-                    swipe(500, 1600, 500, 1000, 2000)
-                    sleep(12000)
-                    textContains("浏览完成，现在下单").findOne(5000 / speed);
-                    back();
+                    let task = task_list[j];
+                    let task_info = task.text();
+                    toastLog(task_info)
+                    switch (task_info) {
+                        case "逛精选好物得1500肥料 (0/1)":
+                        case "逛一逛领1500肥料 (0/3)":
+                        case "逛一逛领1500肥料 (1/3)":
+                        case "逛一逛领1500肥料 (2/3)":
+                            let index = task.indexInParent()
+                            common.clickUiObject(className("android.view.View").depth(17).indexInParent(index + 2).findOne().child(0))
+                            sleep(2500)
+                            swipe(500, 1600, 500, 1000, 2000)
+                            sleep(12000)
+                            textContains("浏览完成，现在下单").findOne(5000 / speed);
+                            sleep(800);
+                            back();
+                            break;
+                        default:
+                    }
                     sleep(1000 / speed);
                 }
             }
-            if (text("去浏览").exists()) {
+            /*if (text("去浏览").exists()) {
                 common.clickByText("去浏览");
                 textContains("浏览15s得500肥料").findOne(2000 / speed);
                 swipe(500, 1600, 500, 1000, 1000);
@@ -100,16 +113,12 @@ function MainExecutor() {
                 textMatches(/任务已经完成/).findOne(5000 / speed);
                 back();
                 sleep(500 / speed);
-            }
-            if (textContains("逛逛淘宝芭芭农场").exists()) {
-                let task_info = textContains("逛逛淘宝芭芭农场").findOnce();
-                let index = task_info.indexInParent()
+            }*/
+            if (text("逛逛淘宝芭芭农场 (0/1)").exists()) {
+                let task = text("逛逛淘宝芭芭农场 (0/1)").findOnce();
+                let index = task.indexInParent()
                 let btn = className("android.view.View").depth(17).indexInParent(index + 2).findOne().child(0)
-                if (btn.text() == "去逛逛") {
-                    common.clickUiObject(btn)
-                } else {
-                    launchApp("淘宝")
-                }
+                common.clickUiObject(btn)
             } else {
                 launchApp("淘宝")
             }
@@ -168,7 +177,7 @@ function MainExecutor() {
             click("去领取");
             sleep(1500 / speed);
 
-            for (let j = 0; j < 3; j++) {
+            for (let j = 0; j < 4; j++) {
                 for (let i = 0; i < 15; i++) {
                     let list = getButtons();
                     if (i >= list.size()) {
@@ -177,8 +186,9 @@ function MainExecutor() {
                     let btn = list.get(i)
                     let btn_text = btn.text()
                     var task_info = btn.parent().child(0).child(0).text();
-                    if (task_info.includes("下单")) {
-                        log("结束本次循环")
+                    if (task_info.includes("下单") ||
+                        task_info === "逛逛支付宝芭芭农场(0/1)" ||
+                        task_info === "走走路就轻松赚到钱(0/1)") {
                         continue;
                     }
                     toastLog(task_info)
@@ -211,26 +221,29 @@ function MainExecutor() {
                             sleep(1000 / speed);
                             back();
                             break;
+                        case "浏览金币小镇得肥料(0/1)":
+                        case "浏览店铺有好礼(0/1)":
+                        case "浏览短视频(0/1)":
+                            common.clickUiObject(btn);
+                            sleep(15000);
+                            textContains("全部完成啦").findOne(5000 / speed);
+                            sleep(1000);
+                            back();
+                            break;
                         default:
-                            if (btn_text == "去浏览") {
-                                common.clickUiObject(btn);
-                                sleep(15000);
-                                textContains("全部完成啦").findOne(5000 / speed);
-                                sleep(1000);
-                                back();
-                            } else if (task_info.includes("淘宝人生")) {
+                            if (task_info.includes("淘宝人生")) {
                                 common.clickUiObject(btn);
                                 text("淘宝人生").findOne(4000 / speed)
                                 sleep(7000 / speed);
                                 click(500, 2000);
                                 sleep(4000 / speed);
                                 back();
-                                sleep(1500 / speed);
+                                sleep(1000 / speed);
                             } else {
                                 log("跳过任务");
                             }
                     }
-                    sleep(800)
+                    sleep(800 / speed);
                 }
             }
 
@@ -298,6 +311,19 @@ function MainExecutor() {
             set.push("支付宝助力完成");
             storage.clear();
             storage.put(nowDate, set);
+        }
+
+        function getZfbTask() {
+            let task_list = className("android.view.View").depth(17).textMatches(/\S.+/).find();
+            task_list = task_list.filter(task => {
+                let index = task.indexInParent();
+                let btn_parent = className("android.view.View").depth(17).indexInParent(index + 2).findOnce();
+                if (btn_parent != null) {
+                    let child_list = btn_parent.find(textMatches(/去完成|去浏览|去逛逛/));
+                    return child_list.size() !== 0;
+                }
+            });
+            return task_list;
         }
 
         function getButtons() {
