@@ -209,10 +209,16 @@ function MainExecutor() {
                             className("android.widget.ListView").findOne(3000);
                             let label_list = className("android.widget.ListView").find();
                             let label_btn = label_list.findOne(clickable());
-                            common.clickUiObject(label_btn);
-                            text("滑动浏览 15 秒得").findOne(3000);
-                            sleep(500 / speed);
-                            swipe(500, 1900, 500, 400, 16000);
+                            if (text("卫衣").exists() || desc("卫衣").exists()) {
+                                common.clickByText("卫衣", 1000);
+                                common.clickByDesc("卫衣", 1000);
+                                sleep(15000);
+                            } else {
+                                common.clickUiObject(label_btn);
+                                text("滑动浏览 15 秒得").findOne(3000);
+                                sleep(500 / speed);
+                                swipe(500, 1900, 500, 400, 16000);
+                            }
                             back();
                             sleep(1000);
                             back();
