@@ -69,21 +69,23 @@ function MainExecutor() {
                 common.clickUiObject(className("android.widget.Image").boundsInside(WIDTH / 2, HEIGHT / 2, WIDTH, HEIGHT).depth(16).untilFind().get(0));
             }
             common.clickByText("立即施肥", 1000)
-
             sleep(1000 / speed);
-            var uiObjs = text("领取").find();
-            uiObjs.forEach(uiObj => {
-                common.clickUiObject(uiObj);
-            });
-            sleep(1000 / speed);
-
             for (let i = 0; i < 4; i++) {
-                for (let j = 0; j < 10; j++) {
+                for (let j = 0; j < 100; j++) {
                     let task_list = getZfbTask();
                     if (j >= task_list.length) {
                         break;
                     }
-                    let task = task_list[j];
+                    let task = task_list.get(j);
+                    let index = task.indexInParent();
+                    let btn_parent = className("android.view.View").depth(17).indexInParent(index + 2).findOnce();
+                    if (btn_parent == null) {
+                        continue;
+                    }
+                    let btn = btn_parent.findOne(textMatches(/去完成|去浏览|去逛逛/));
+                    if (btn == null) {
+                        continue;
+                    }
                     let task_info = task.text();
                     toastLog(task_info)
                     switch (task_info) {
@@ -91,8 +93,7 @@ function MainExecutor() {
                         case "逛一逛领1500肥料 (0/3)":
                         case "逛一逛领1500肥料 (1/3)":
                         case "逛一逛领1500肥料 (2/3)":
-                            let index = task.indexInParent()
-                            common.clickUiObject(className("android.view.View").depth(17).indexInParent(index + 2).findOne().child(0))
+                            common.clickUiObject(btn);
                             sleep(2500)
                             swipe(500, 1600, 500, 1000, 2000)
                             sleep(12000)
@@ -100,42 +101,43 @@ function MainExecutor() {
                             sleep(800);
                             back();
                             break;
+                        case "逛逛花呗翻翻卡 (0/1)":
+                            common.clickUiObject(btn);
+                            sleep(2000 / speed);
+                            back();
+                            break;
                         default:
                     }
                     sleep(1000 / speed);
                 }
             }
-            /*if (text("去浏览").exists()) {
-                common.clickByText("去浏览");
-                textContains("浏览15s得500肥料").findOne(2000 / speed);
-                swipe(500, 1600, 500, 1000, 1000);
-                sleep(15000)
-                textMatches(/任务已经完成/).findOne(5000 / speed);
-                back();
-                sleep(500 / speed);
-            }*/
+            let uiObjs = text("领取").find();
+            uiObjs.forEach(uiObj => {
+                common.clickUiObject(uiObj);
+            });
+            sleep(1000 / speed);
             if (text("逛逛淘宝芭芭农场 (0/1)").exists()) {
                 let task = text("逛逛淘宝芭芭农场 (0/1)").findOnce();
                 let index = task.indexInParent()
                 let btn = className("android.view.View").depth(17).indexInParent(index + 2).findOne().child(0)
-                common.clickUiObject(btn)
-            } else {
+                common.clickUiObject(btn);
+                if (id("android.miui:id/app1").findOne(3000 / speed)) {
+                    id("android.miui:id/app1").findOne().click();
+                }
+                text("天猫农场-福年种福果").findOne(1000 / speed);
+                className("android.widget.Image").text("头像").findOne(3000 / speed)
+                sleep(1000 / speed);
+                common.killApp("淘宝");
+                sleep(1000 / speed)
                 launchApp("淘宝")
+            } else {
+                launchApp("淘宝");
             }
             if (id("android.miui:id/app1").findOne(3000 / speed)) {
                 id("android.miui:id/app1").findOne().click();
             }
+            sleep(1000 / speed)
             log("进入淘宝芭芭农场");
-            text("天猫农场-福年种福果").findOne(1000 / speed);
-            sleep(5000 / speed);
-            common.killApp("淘宝");
-            sleep(1000 / speed)
-            launchApp("淘宝")
-            if (id("android.miui:id/app1").findOne(3000 / speed)) {
-                id("android.miui:id/app1").findOne().click();
-            }
-            sleep(1000 / speed)
-
             common.clickByDesc("首页", 1000 / sleep)
             while (!text("芭芭农场").exists()) {
                 swipe(500, 800, 500, 1200, 1000)
@@ -203,16 +205,22 @@ function MainExecutor() {
                             break;
                         case "搜一搜你心仪的宝贝(0/1)":
                             common.clickUiObject(btn)
-                            sleep(800)
-                            common.clickByDesc("卫衣", 500);
-                            common.clickByText("卫衣", 500);
-                            sleep(15000);
+                            sleep(1000);
+                            className("android.widget.ListView").findOne(3000);
+                            let label_list = className("android.widget.ListView").find();
+                            let label_btn = label_list.findOne(clickable());
+                            common.clickUiObject(label_btn);
+                            text("滑动浏览 15 秒得").findOne(3000);
+                            sleep(500 / speed);
+                            swipe(500, 1900, 500, 400, 16000);
                             back();
                             sleep(1000);
                             back();
                             break;
                         case "逛精选好物(0/1)":
                         case "逛精选好货(0/1)":
+                        case "浏览页面有好礼(0/1)":
+                        case "浏览变美体验官活动(0/1)":
                             common.clickUiObject(btn);
                             sleep(1000 / speed);
                             swipe(500, 1800, 500, 1200, 2000);
@@ -314,16 +322,7 @@ function MainExecutor() {
         }
 
         function getZfbTask() {
-            let task_list = className("android.view.View").depth(17).textMatches(/\S.+/).find();
-            task_list = task_list.filter(task => {
-                let index = task.indexInParent();
-                let btn_parent = className("android.view.View").depth(17).indexInParent(index + 2).findOnce();
-                if (btn_parent != null) {
-                    let child_list = btn_parent.find(textMatches(/去完成|去浏览|去逛逛/));
-                    return child_list.size() !== 0;
-                }
-            });
-            return task_list;
+            return className("android.view.View").depth(17).textMatches(/\S.+/).find();
         }
 
         function getButtons() {
