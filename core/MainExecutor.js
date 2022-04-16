@@ -188,9 +188,10 @@ function MainExecutor() {
                     let btn = list.get(i)
                     let btn_text = btn.text()
                     var task_info = btn.parent().child(0).child(0).text();
-                    if (task_info.includes("下单") ||
-                        task_info === "逛逛支付宝芭芭农场(0/1)" ||
-                        task_info === "走走路就轻松赚到钱(0/1)") {
+                    if (task_info.includes("下单")
+                        || task_info === "逛逛支付宝芭芭农场(0/1)"
+                        || task_info === "走走路就轻松赚到钱(0/1)"
+                        || task_info === "买精选商品送2万肥料(0/2)") {
                         continue;
                     }
                     toastLog(task_info)
@@ -212,7 +213,7 @@ function MainExecutor() {
                             if (text("卫衣").exists() || desc("卫衣").exists()) {
                                 common.clickByText("卫衣", 1000);
                                 common.clickByDesc("卫衣", 1000);
-                                sleep(15000);
+                                swipe(500, 1900, 500, 400, 16000);
                             } else {
                                 common.clickUiObject(label_btn);
                                 text("滑动浏览 15 秒得").findOne(3000);
