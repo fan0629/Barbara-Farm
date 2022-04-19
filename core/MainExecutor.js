@@ -407,7 +407,7 @@ function MainExecutor() {
             click(500, 400);
             common.clickByText("立即施肥", 2000)
             //className("android.webkit.WebView").findOne().child(0).child(0).child(5).child(0).child(1).click();
-            let teskBtn = className("android.widget.Image").depth(16).untilFind().get(1)
+            let teskBtn = className("android.widget.Image").boundsInside(WIDTH / 2, HEIGHT / 2, WIDTH, HEIGHT).depth(16).untilFind().get(0)
             let pointY = teskBtn.bounds().centerY()
             for (let i = 0; i < 150; i++) {
                 click(540, pointY);
