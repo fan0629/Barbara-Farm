@@ -191,7 +191,8 @@ function MainExecutor() {
                     if (task_info.includes("下单")
                         || task_info === "逛逛支付宝芭芭农场(0/1)"
                         || task_info === "走走路就轻松赚到钱(0/1)"
-                        || task_info === "买精选商品送2万肥料(0/2)") {
+                        || task_info === "买精选商品送2万肥料(0/2)"
+                        || task_info === "来打工赚提现红包(0/1)") {
                         continue;
                     }
                     toastLog(task_info)
