@@ -421,7 +421,7 @@ function MainExecutor() {
                     sleep(600)
                     common.clickByText("点击领取", 1000)
                     sleep(600)
-                    common.clickByText("收下去施肥", 1000)
+                    common.clickByTextMatches(/收下去施肥|立即领取/, 1000)
                     sleep(600)
                 }
                 if (textMatches(/领取|已领取/).exists()) {

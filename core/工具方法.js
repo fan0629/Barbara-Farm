@@ -70,7 +70,7 @@ var common = {
     },
     clickByTextMatches: (reg, timeout) => {
         if (timeout) {
-            let uiObject = this.textMatches(text).findOne(timeout);
+            let uiObject = this.textMatches(reg).findOne(timeout);
             return common.clickUiObject(uiObject);
         }
         let uiObject = this.textMatches(reg).findOne();
