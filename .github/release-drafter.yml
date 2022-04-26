@@ -15,7 +15,6 @@ categories:
       - 'chore'
       - 'documentation'
 change-template: '- $TITLE (#$NUMBER) @$AUTHOR'
-prerelease: true
 template: |
   # Changes
 
