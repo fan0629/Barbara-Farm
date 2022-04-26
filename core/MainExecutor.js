@@ -83,10 +83,11 @@ function MainExecutor() {
                         continue;
                     }
                     let btn = btn_parent.findOne(textMatches(/去完成|去浏览|去逛逛/));
-                    if (btn == null) {
+                    let task_info = task.text();
+                    if (btn == null
+                        || task_info === "逛逛淘宝芭芭农场 (0/1)") {
                         continue;
                     }
-                    let task_info = task.text();
                     toastLog(task_info)
                     switch (task_info) {
                         case "逛精选好物得1500肥料 (0/1)":
@@ -107,6 +108,7 @@ function MainExecutor() {
                             back();
                             break;
                         default:
+                            toastLog("跳过任务");
                     }
                     sleep(1000 / speed);
                 }
@@ -419,6 +421,8 @@ function MainExecutor() {
                     sleep(600)
                 }
                 if (text("点击领取").exists()) {
+                    sleep(600)
+                    common.clickByText("点击领取", 1000)
                     sleep(600)
                     common.clickByText("点击领取", 1000)
                     sleep(600)
