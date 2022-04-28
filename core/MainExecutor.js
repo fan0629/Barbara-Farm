@@ -423,9 +423,9 @@ function MainExecutor() {
                 if (text("点击领取").exists()) {
                     sleep(600)
                     common.clickByText("点击领取", 1000)
-                    sleep(1200)
-                    common.clickByText("点击领取", 1000)
                     sleep(600)
+                    common.clickByTextMatches(/收下去施肥|立即领取/, 1000)
+                    sleep(1000)
                     common.clickByTextMatches(/收下去施肥|立即领取/, 1000)
                     sleep(600)
                 }
