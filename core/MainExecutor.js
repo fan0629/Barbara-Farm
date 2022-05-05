@@ -20,7 +20,7 @@ function MainExecutor() {
                     toastLog("脚本超时退出");
                     exit();
                 },
-                450000 / speed);
+                470000 / speed);
         });
 
         main();
@@ -85,7 +85,9 @@ function MainExecutor() {
                     let btn = btn_parent.findOne(textMatches(/去完成|去浏览|去逛逛/));
                     let task_info = task.text();
                     if (btn == null
-                        || task_info === "逛逛淘宝芭芭农场 (0/1)") {
+                        || task_info === "逛逛淘宝芭芭农场 (0/1)"
+                        || task_info === "逛精选好物得1500肥料 (1/1)"
+                        || task_info === "逛一逛领1500肥料 (3/3)") {
                         continue;
                     }
                     toastLog(task_info)
@@ -169,10 +171,12 @@ function MainExecutor() {
             }
             log("点击领取每日肥料")
             let taobaoDailyPoint = findColorEquals(captureScreen(), 0x8b4100, WIDTH / 2, HEIGHT / 2, WIDTH / 2, HEIGHT / 2)
-            click(taobaoDailyPoint.x, taobaoDailyPoint.y);
-            common.clickByTextContains("关闭", 2000 / speed)
-            sleep(1000 / speed)
-            click(WIDTH - taobaoDailyPoint.x, taobaoDailyPoint.y)
+            if (taobaoDailyPoint != null) {
+                click(taobaoDailyPoint.x, taobaoDailyPoint.y);
+                common.clickByTextContains("关闭", 2000 / speed)
+                sleep(1000 / speed)
+                click(WIDTH - taobaoDailyPoint.x, taobaoDailyPoint.y)
+            }
             sleep(1000 / speed)
             common.clickUiObject(className("android.widget.Image").depth(13).clickable().indexInParent(2).findOne());
             sleep(1500 / speed);
@@ -217,14 +221,14 @@ function MainExecutor() {
                                 common.clickByText("卫衣", 1000);
                                 common.clickByDesc("卫衣", 1000);
                                 swipe(500, 1900, 500, 400, 16000);
+                                back();
+                                sleep(1000);
                             } else {
                                 common.clickUiObject(label_btn);
                                 text("滑动浏览 15 秒得").findOne(3000);
                                 sleep(500 / speed);
                                 swipe(500, 1900, 500, 400, 16000);
                             }
-                            back();
-                            sleep(1000);
                             back();
                             break;
                         case "逛精选好物(0/1)":
@@ -412,7 +416,7 @@ function MainExecutor() {
             //className("android.webkit.WebView").findOne().child(0).child(0).child(5).child(0).child(1).click();
             let teskBtn = className("android.widget.Image").boundsInside(WIDTH / 2, HEIGHT / 2, WIDTH, HEIGHT).depth(16).untilFind().get(0)
             let pointY = teskBtn.bounds().centerY()
-            for (let i = 0; i < 150; i++) {
+            for (let i = 0; i < 200; i++) {
                 click(540, pointY);
                 sleep(700)
                 if (text("果树升级啦").exists()) {
@@ -425,7 +429,7 @@ function MainExecutor() {
                     common.clickByText("点击领取", 1000)
                     sleep(600)
                     common.clickByTextMatches(/收下去施肥|立即领取/, 1000)
-                    sleep(1000)
+                    sleep(600)
                     common.clickByTextMatches(/收下去施肥|立即领取/, 1000)
                     sleep(600)
                 }
