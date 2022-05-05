@@ -196,7 +196,6 @@ function MainExecutor() {
                     var task_info = btn.parent().child(0).child(0).text();
                     if (task_info.includes("下单")
                         || task_info === "逛逛支付宝芭芭农场(0/1)"
-                        || task_info === "走走路就轻松赚到钱(0/1)"
                         || task_info === "买精选商品送2万肥料(0/2)"
                         || task_info === "来打工赚提现红包(0/1)") {
                         continue;
@@ -250,6 +249,26 @@ function MainExecutor() {
                             sleep(15000);
                             textContains("全部完成啦").findOne(5000 / speed);
                             sleep(1000);
+                            back();
+                            break;
+                        case "走走路就轻松赚到钱(0/1)":
+                            let live_pkg = "com.taobao.live";
+                            let _pkg_mgr = context.getPackageManager();
+                            let _app_name, _app_info;
+                            try {
+                                _app_info = _pkg_mgr.getApplicationInfo(live_pkg, 0);
+                                _app_name = _pkg_mgr.getApplicationLabel(_app_info);
+                            } catch (e) {
+                                error(e)
+                            }
+                            if (_app_name) {
+                                launch(live_pkg)
+                                sleep(5000);
+                                common.killApp("点淘")
+                            } else {
+                                toastLog("未安装点淘app");
+                            }
+                            sleep(1000 / speed);
                             back();
                             break;
                         default:
