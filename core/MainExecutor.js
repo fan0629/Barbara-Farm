@@ -197,7 +197,7 @@ function MainExecutor() {
                     if (task_info.includes("下单")
                         || task_info === "逛逛支付宝芭芭农场(0/1)"
                         || task_info === "买精选商品送2万肥料(0/2)"
-                        || task_info === "来打工赚提现红包(0/1)") {
+                    ) {
                         continue;
                     }
                     toastLog(task_info)
@@ -252,6 +252,7 @@ function MainExecutor() {
                             back();
                             break;
                         case "走走路就轻松赚到钱(0/1)":
+                        case "来打工赚提现红包(0/1)":
                             let live_pkg = "com.taobao.live";
                             let _pkg_mgr = context.getPackageManager();
                             let _app_name, _app_info;
@@ -412,7 +413,7 @@ function MainExecutor() {
                         sleep(1000 / speed);
                         launchApp("支付宝")
                         sleep(16000);
-                    }else if (str.includes("蚂蚁庄园")) {
+                    } else if (str.includes("蚂蚁庄园")) {
                         continue;
                     }
                     sleep(1000 / speed);
