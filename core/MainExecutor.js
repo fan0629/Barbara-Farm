@@ -253,6 +253,7 @@ function MainExecutor() {
                             break;
                         case "走走路就轻松赚到钱(0/1)":
                         case "来打工赚提现红包(0/1)":
+                            common.clickUiObject(btn);
                             let live_pkg = "com.taobao.live";
                             let _pkg_mgr = context.getPackageManager();
                             let _app_name, _app_info;
@@ -263,7 +264,9 @@ function MainExecutor() {
                                 error(e)
                             }
                             if (_app_name) {
-                                launch(live_pkg)
+                                common.clickByText("下载/打开APP", 2000, false);
+                                sleep(500);
+                                common.clickUiObject(id("com.taobao.taobao:id/confirm_yes").findOne(1000));
                                 sleep(5000);
                                 common.killApp("点淘")
                             } else {
