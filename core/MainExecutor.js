@@ -412,6 +412,8 @@ function MainExecutor() {
                         sleep(1000 / speed);
                         launchApp("支付宝")
                         sleep(16000);
+                    }else if (str.includes("蚂蚁庄园")) {
+                        continue;
                     }
                     sleep(1000 / speed);
                     back();
