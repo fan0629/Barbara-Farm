@@ -31,13 +31,14 @@ if (config.device_width < 10 || config.device_height < 10) {
 
 ui.layout(
   <vertical>
-    <webview id="loadingWebview" margin="0 0" />
-    <webview id="webview" margin="0 0" />
+    <webview id="loadingWebview" margin="0 0" h="*" w="*" />
+    <webview id="webview" margin="0 0" h="*" w="*" />
   </vertical>
 )
 let mainScriptPath = FileUtils.getRealMainScriptPath(true)
 let indexFilePath = "file://" + mainScriptPath + "/vue_configs/index.html"
 let loadingFilePath = "file://" + mainScriptPath + "/vue_configs/loading.html"
+let errorFilePath = "file://" + mainScriptPath + "/vue_configs/error.html"
 
 let postMessageToWebView = () => { console.error('function not ready') }
 
@@ -47,6 +48,7 @@ if (config.clear_webview_cache) {
   config.overwrite('clear_webview_cache', false)
 }
 prepareWebView(ui.loadingWebview, {
+  enable_log: config.webview_loging,
   mainScriptPath: mainScriptPath,
   indexFilePath: loadingFilePath,
   // 延迟注册
@@ -78,6 +80,7 @@ let bridgeHandlerBuilder = require('./lib/BridgeHandler.js')
 let loadSuccess = false
 /**/
 postMessageToWebView = prepareWebView(ui.webview, {
+  enable_log: config.webview_loging,
   mainScriptPath: mainScriptPath,
   indexFilePath: indexFilePath,
   // 延迟注册
@@ -107,8 +110,7 @@ setTimeout(function () {
     return
   }
   toastLog('加载资源异常 请重试')
-  ui.loadingWebview.setVisibility(View.GONE)
-  ui.webview.setVisibility(View.VISIBLE)
+  ui.loadingWebview.loadUrl(errorFilePath)
 }, 10000)
 
 
@@ -143,7 +145,7 @@ function registerSensors () {
     })
   }
   distanceSensor = sensors.register('proximity', sensors.delay.ui)
-  if (!distanceSensor) {
+  if (distanceSensor) {
     distanceSensor.on('change', (event, d) => {
       postMessageToWebView({ functionName: 'distanceSensorChange', data: { distance: d } })
     })

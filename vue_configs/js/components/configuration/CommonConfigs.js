@@ -9,6 +9,7 @@ const LockConfig = {
       configs: {
         password: '',
         is_alipay_locked: true,
+        multi_device_login: false,
         alipay_lock_password: '',
         auto_set_brightness: true,
         dismiss_dialog_if_locked: true,
@@ -21,6 +22,7 @@ const LockConfig = {
         lock_x: 150,
         lock_y: 970,
         timeout_unlock: 1000,
+        buddha_like_mode: false,
       },
       device: {
         pos_x: 0,
@@ -63,9 +65,13 @@ const LockConfig = {
       <number-field v-model="configs.timeout_unlock" label="解锁超时时间" placeholder="请输入解锁超时时间">
         <template #right-icon><span>毫秒</span></template>
       </number-field>
+      <tip-block>仅限在支付宝账号管理-登录设置-开启可信设备自动登录后才有效，否则需要密码登录，无法使用此功能自动登录</tip-block>
+      <switch-cell title="多设备自动登录" v-model="configs.multi_device_login" />
       <switch-cell title="支付宝是否锁定" v-model="configs.is_alipay_locked" />
       <van-field v-if="configs.is_alipay_locked" v-model="configs.alipay_lock_password" label="手势密码" placeholder="请输入手势密码对应的九宫格数字" type="password" input-align="right" />
       <switch-cell title="锁屏启动设置最低亮度" v-model="configs.auto_set_brightness" />
+      <tip-block>启用佛系模式之后，如果屏幕未锁定，则认定手机正在使用中，自动延迟五分钟，等待下次运行时状态为已锁屏才继续运行。由其他脚本触发的不受此模式限制</tip-block>
+      <switch-cell title="启用佛系模式" v-model="configs.buddha_like_mode" />
       <switch-cell title="锁屏启动关闭弹窗提示" v-model="configs.dismiss_dialog_if_locked" />
       <switch-cell title="锁屏启动时检测设备传感器" label="检测是否在裤兜内，防止误触" v-model="configs.check_device_posture" />
       <template  v-if="configs.check_device_posture">
@@ -128,10 +134,11 @@ const FloatyConfig = {
       </number-field>
       <number-field v-model="configs.min_floaty_x" label="悬浮窗位置X" placeholder="请输入悬浮窗横坐标位置" />
       <number-field v-model="configs.min_floaty_y" label="悬浮窗位置Y" placeholder="请输入悬浮窗纵坐标位置" />
-      <tip-block>刘海屏或者挖孔屏悬浮窗显示位置和实际目测位置不同，需要施加一个偏移量，一般是负值，脚本运行时会自动设置</tip-block>
+      <tip-block>刘海屏或者挖孔屏悬浮窗显示位置和实际目测位置不同，需要施加一个偏移量，一般是负值，脚本运行时会自动设置，非异形屏请自行修改为0</tip-block>
       <switch-cell title="下次执行时重新识别" v-model="configs.auto_set_bang_offset" />
-      <van-cell center title="当前偏移量">
-        <span>{{configs.auto_set_bang_offset ? "下次执行时重新识别": configs.bang_offset}}</span>
+      <number-field v-if="!configs.auto_set_bang_offset" v-model="configs.bang_offset" label="偏移量" label-width="12em" />
+      <van-cell center title="偏移量" v-else>
+        <span>下次执行时重新识别</span>
       </van-cell>
       <switch-cell title="不自动设置定时任务" label="是否在脚本执行完成后不自动设置定时任务，仅保留倒计时悬浮窗" title-style="flex:3;" v-model="configs.not_setup_auto_start" />
       <switch-cell v-if="configs.not_setup_auto_start" title="完全关闭定时任务功能" label="完全禁止脚本设置定时任务，只保留部分延迟机制的定时任务" title-style="flex:3;" v-model="configs.disable_all_auto_start" />
@@ -157,7 +164,7 @@ const LogConfig = {
         save_log_file: true,
         // 日志保留天数
         log_saved_days: 3,
-        back_size: '',
+        back_size: '1024',
         async_save_log_file: true,
         console_log_maximum_size: 1500,
       }
@@ -166,26 +173,31 @@ const LogConfig = {
   methods: {
     showLogs: function () {
       $app.invoke('showLogs', {})
+    },
+    showAutoJSLogs: function () {
+      $app.invoke('openConsole', {})
     }
   },
   template: `
   <div>
-    <van-divider content-position="left">
-      <van-button style="margin-left: 0.4rem" plain hairline type="primary" size="mini" @click="showLogs">查看日志</van-button>
-    </van-divider>
-      <van-cell-group>
-        <tip-block v-if="!configs.is_pro">控制台保留的日志行数，避免运行时间长后保留太多的无用日志，导致内存浪费</tip-block>
-        <number-field v-if="!configs.is_pro" v-model="configs.console_log_maximum_size" label="控制台日志最大保留行数" label-width="12em" />
-        <switch-cell title="是否显示debug日志" v-model="configs.show_debug_log" />
-        <switch-cell title="是否显示脚本引擎id" v-model="configs.show_engine_id" />
-        <switch-cell title="是否保存日志到文件" v-model="configs.save_log_file" />
-        <number-field v-if="configs.save_log_file" v-model="configs.back_size" label="日志文件滚动大小" label-width="8em" placeholder="请输入单个文件最大大小" >
-          <template #right-icon><span>KB</span></template>
-        </number-field>
-        <number-field v-if="configs.save_log_file" v-model="configs.log_saved_days" label="日志文件保留天数" label-width="8em" placeholder="请输入日志文件保留天数" >
-          <template #right-icon><span>天</span></template>
-        </number-field>
-        <switch-cell title="是否异步保存日志到文件" v-model="configs.async_save_log_file" />
+    <tip-block>
+      <van-button style="margin-left: 0.4rem;margin-right:0.4rem" plain hairline type="primary" size="mini" @click="showLogs">查看脚本日志</van-button>
+      仅提供脚本所维护的日志信息，如遇报错请查看AutoJS软件自带日志
+      <van-button style="margin-left: 0.4rem;margin-right:0.4rem" plain hairline type="primary" size="mini" @click="showAutoJSLogs">查看AutoJS日志</van-button>
+    </tip-block>
+    <van-cell-group>
+      <tip-block v-if="!configs.is_pro">控制台保留的日志行数，避免运行时间长后保留太多的无用日志，导致内存浪费</tip-block>
+      <number-field v-if="!configs.is_pro" v-model="configs.console_log_maximum_size" label="控制台日志最大保留行数" label-width="12em" />
+      <switch-cell title="是否显示debug日志" v-model="configs.show_debug_log" />
+      <switch-cell title="是否显示脚本引擎id" v-model="configs.show_engine_id" />
+      <switch-cell title="是否保存日志到文件" v-model="configs.save_log_file" />
+      <number-field v-if="configs.save_log_file" v-model="configs.back_size" label="日志文件滚动大小" label-width="8em" placeholder="请输入单个文件最大大小" >
+        <template #right-icon><span>KB</span></template>
+      </number-field>
+      <number-field v-if="configs.save_log_file" v-model="configs.log_saved_days" label="日志文件保留天数" label-width="8em" placeholder="请输入日志文件保留天数" >
+        <template #right-icon><span>天</span></template>
+      </number-field>
+      <switch-cell title="是否异步保存日志到文件" v-model="configs.async_save_log_file" />
     </van-cell-group>
   </div>`
 }
@@ -198,11 +210,12 @@ const AdvanceCommonConfig = {
   mixins: [mixin_common],
   data () {
     return {
+      activeNames: [],
+      enabledServices: 'com.taobao.idlefishs.modify.opencv4/org.autojs.autojs.timing.work.AlarmManagerProvider:com.taobao.idlefishs.modify.opencv4/org.autojs.autojs.timing.work.AlarmManagerProvider:com.taobao.idlefishs.modify.opencv4/org.autojs.autojs.timing.work.AlarmManagerProvider',
       configs: {
         single_script: true,
         auto_restart_when_crashed: true,
         useCustomScrollDown: true,
-        scrollDownSpeed: null,
         bottomHeight: null,
         other_accessisibility_services: '',
         // 截图相关
@@ -215,10 +228,40 @@ const AdvanceCommonConfig = {
       }
     }
   },
+  computed: {
+    accessibilityServices: function () {
+      if (!this.configs.other_accessisibility_services || this.configs.other_accessisibility_services.length == 0) {
+        return []
+      }
+      return this.configs.other_accessisibility_services.split(':')
+    },
+    enabledAccessibilityServices: function () {
+      if (!this.enabledServices || this.enabledServices.length == 0) {
+        return []
+      }
+      return this.enabledServices.split(':')
+    },
+  },
   methods: {
     doAuthADB: function () {
       $app.invoke('doAuthADB', {})
+      let _this = this
+      setTimeout(() => {
+        _this.getEnabledServices()
+      }, 2000)
     },
+    copyText: function (text) {
+      console.log('复制文本：', text)
+      $app.invoke('copyText', { text })
+    },
+    getEnabledServices: function () {
+      $nativeApi.request('getEnabledServices', {}).then(resp => {
+        this.enabledServices = resp.enabledServices
+      })
+    }
+  },
+  mounted() {
+    this.getEnabledServices()
   },
   template: `
   <div>
@@ -232,9 +275,22 @@ const AdvanceCommonConfig = {
         <van-button style="margin-left: 0.4rem" plain hairline type="primary" size="mini" @click="doAuthADB">触发授权</van-button>
       </tip-block>
       <van-field v-model="configs.other_accessisibility_services" label="无障碍服务service" label-width="10em" type="text" placeholder="请输入" input-align="right" stop-propagation />
+      <van-collapse v-model="activeNames">
+        <van-collapse-item title="查看无障碍服务列表" name="1">
+          <van-divider content-position="left">当前设置的无障碍服务</van-divider>
+          <van-cell v-if="accessibilityServices.length==0" title="无"/>
+          <van-cell v-else v-for="service in accessibilityServices" :title="service" :key="service" style="overflow:auto;" />
+          <van-divider content-position="left">当前已启用的无障碍服务</van-divider>
+          <van-cell v-if="enabledAccessibilityServices.length==0" title="无"/>
+          <van-cell v-else v-for="service in enabledAccessibilityServices" :title="service" :key="service" style="overflow:auto;">
+            <template #right-icon>
+              <van-button plain hairline type="primary" size="mini" style="margin-left: 0.3rem;width: 2rem;" @click="copyText(service)">复制</van-button>
+            </template>
+          </van-cell>
+        </van-collapse-item>
+      </van-collapse>
       <switch-cell title="是否使用模拟滑动" v-model="configs.useCustomScrollDown" />
       <template v-if="configs.useCustomScrollDown">
-        <number-field v-model="configs.scrollDownSpeed" label="模拟滑动速度" label-width="8em" />
         <number-field v-model="configs.bottomHeight" label="模拟底部起始高度" label-width="8em" />
       </template>
       <switch-cell title="是否自动授权截图权限" v-model="configs.request_capture_permission" />
