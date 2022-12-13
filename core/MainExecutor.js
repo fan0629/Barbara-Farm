@@ -14,15 +14,15 @@ module.exports = {
 }
 
 function main() {
-    threads.start(function() {
-        setTimeout(function() {
+    threads.start(function () {
+        setTimeout(function () {
                 toastLog("脚本超时退出");
                 exit();
             },
             600000 / speed);
     });
-    threads.start(function() {
-        setInterval(function() {
+    threads.start(function () {
+        setInterval(function () {
             if (id("com.taobao.taobao:id/update_contentDialog").findOnce()) {
                 toastLog("发现升级窗口");
                 common.clickUiObject(id("com.taobao.taobao:id/update_button_cancel").findOne())
@@ -78,25 +78,20 @@ function main() {
     common.clickByText("立即施肥", 1000)
     sleep(1000 / speed);
     for (let i = 0; i < 4; i++) {
-        for (let j = 0; j < 100; j++) {
-            let task_btn_list = getZfbButtons();
-            if (j >= task_btn_list.length) {
-                break;
+        let parent = className("android.widget.Button").depth(18).textMatches(/去浏览|去完成|去逛逛/).findOne().parent().parent();
+        parent.children().forEach((child, index) => {
+            if (index % 4 !== 2) {
+                return;
             }
-            let task_btn = task_btn_list.get(j);
-            let index = task_btn.parent().indexInParent();
-            let task = task_btn.parent().parent().child(index - 2);
-            if (task == null) {
-                toastLog("未找到任务控件");
-                continue;
-            }
-            let task_info = task.text().trim();
-            if (task_info.includes("逛逛淘宝芭芭农场 (0/1)") ||
+            let task_btn = parent.child(child.indexInParent + 2).findOne(textMatches(/去浏览|去完成|去逛逛/));
+            let task_info = child.text().trim();
+            if (task_info === "" ||
+                task_info.includes("逛逛淘宝芭芭农场 (0/1)") ||
                 task_info.includes("逛精选好物得1500肥料 (1/1)") ||
                 task_info.includes("逛一逛领1500肥料 (3/3)") ||
                 task_info.includes("去淘特领好礼 (0/1)") ||
                 task_info.includes(" 看精选商品得1500肥料 (3/3)")) {
-                continue;
+                return;
             }
             toastLog(task_info)
             switch (task_info) {
@@ -125,7 +120,7 @@ function main() {
                     toastLog("跳过任务");
             }
             sleep(1000 / speed);
-        }
+        })
     }
     let uiObjs = text("领取").find();
     uiObjs.forEach(uiObj => {
@@ -134,7 +129,7 @@ function main() {
     sleep(1000 / speed);
     if (textContains("逛逛淘宝芭芭农场 (0/1)").exists()) {
         let task = textContains("逛逛淘宝芭芭农场 (0/1)").findOnce();
-        let index = task.indexInParent();        
+        let index = task.indexInParent();
         let btn = className("android.view.View").depth(17).indexInParent(index + 2).findOne().child(0);
         common.clickUiObject(btn);
         if (id("android.miui:id/app1").findOne(3000 / speed)) {
@@ -400,6 +395,7 @@ function 支付宝助力() {
 function getZfbButtons() {
     return className("android.widget.Button").depth(18).textMatches(/去浏览|去完成|去逛逛/).find();
 }
+
 function getButtons() {
     return className("android.widget.Button").clickable().textMatches(/去浏览|去完成|去逛逛/).find();
 }
