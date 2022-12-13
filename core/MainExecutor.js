@@ -112,6 +112,7 @@ function main() {
                     break;
                 case "逛逛花呗翻翻卡 (0/1)":
                 case "逛一逛芝麻分 (0/1)":
+                case "逛一逛花花卡 (0/1)":
                     common.clickUiObject(task_btn);
                     sleep(2000 / speed);
                     back();
