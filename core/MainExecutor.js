@@ -80,10 +80,10 @@ function main() {
     for (let i = 0; i < 4; i++) {
         let parent = className("android.widget.Button").depth(18).textMatches(/去浏览|去完成|去逛逛/).findOne().parent().parent();
         parent.children().forEach((child, index) => {
-            if (index % 4 !== 2) {
+            if (index % 4 !== 2 || index + 2 >= parent.children().size()) {
                 return;
             }
-            let task_btn = parent.child(child.indexInParent + 2).findOne(textMatches(/去浏览|去完成|去逛逛/));
+            let task_btn = parent.child(child.indexInParent() + 2).findOne(textMatches(/去浏览|去完成|去逛逛/));
             let task_info = child.text().trim();
             if (task_info === "" ||
                 task_info.includes("逛逛淘宝芭芭农场 (0/1)") ||
@@ -118,6 +118,7 @@ function main() {
                     break;
                 default:
                     toastLog("跳过任务");
+                    return;
             }
             sleep(1000 / speed);
         })
