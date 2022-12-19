@@ -1,8 +1,7 @@
 let common = require("./工具方法");
-
 let speed = 0.9; //脚本速度倍率
-let WIDTH = device.width === 0 ? 1080 : device.width;
-let HEIGHT = device.height === 0 ? 2340 : device.height;
+let WIDTH = config.device_width;
+let HEIGHT = config.device_height;
 let storage = storages.create("com.fan.芭芭农场"); //获取本地存储
 let nowDate = new Date().toLocaleDateString(); //获取当日日期
 let set = []; //记录成功操作
@@ -14,13 +13,7 @@ module.exports = {
 }
 
 function main() {
-    threads.start(function () {
-        setTimeout(function () {
-                toastLog("脚本超时退出");
-                exit();
-            },
-            600000 / speed);
-    });
+    common.killApp("支付宝")
     threads.start(function () {
         setInterval(function () {
             if (id("com.taobao.taobao:id/update_contentDialog").findOnce()) {
@@ -47,6 +40,7 @@ function main() {
     launchApp("支付宝");
     log("打开支付宝");
     sleep(1000 / speed)
+
     if (set.indexOf("每日签到完成") === -1) {
         每日签到()
     }
@@ -56,15 +50,14 @@ function main() {
     common.clickUiObject(uiObject);
     text("🇨🇳🏅+…").findOne(4000 / speed);
     sleep(1000 / speed)
-    var img = captureScreen();
-    var templ = images.read("/storage/emulated/0/脚本/Farm/assets/images/daily.jpg");
-    var p = findImage(img, templ);
-    if (p) {
-        toastLog("发现每日肥料" + p);
-        click(p.x + 100, p.y + 10);
-    } else {
-        toast("没找到");
-    }
+    let img = captureScreen();
+    let result = $mlKitOcr.detect(img)
+    result.forEach((ocr) => {
+        if(ocr.label.includes("点击领取") || ocr.label.includes("点击領取")) {
+            click(ocr.bounds.centerX(), ocr.bounds.centerY())
+        }
+    })
+
     sleep(1000 / speed);
     common.clickByText("去领更多肥料", 1000);
     sleep(1000 / speed)
@@ -178,24 +171,17 @@ function main() {
         }
         sleep(600 / speed)
     }
-    log("点击领取每日肥料")
-    var img = captureScreen();
-    var templ = images.read("/storage/emulated/0/脚本/Farm/assets/images/daily.jpg");
-    var p = findImage(img, templ);
-    if (p) {
-        toastLog("发现每日肥料" + p);
-        click(p.x + 100, p.y + 10);
-    } else {
-        toast("没找到");
-    }
-    /*let taobaoDailyPoint = findColorEquals(captureScreen(), 0x8b4100, WIDTH / 2, HEIGHT / 2, WIDTH / 2, HEIGHT / 2)
-    if (taobaoDailyPoint != null) {
-        click(taobaoDailyPoint.x, taobaoDailyPoint.y);
-        sleep(1000 / speed);
-        common.clickByTextContains("关闭", 2000 / speed)
-        sleep(1000 / speed)
-        click(WIDTH - taobaoDailyPoint.x, taobaoDailyPoint.y)
-    }*/
+
+    img = captureScreen();
+    result = $mlKitOcr.detect(img)
+    result.forEach((ocr) => {
+        toastLog(ocr.label)
+        if(ocr.label.includes("点击领取") || ocr.label.includes("点击領取")) {
+            click(ocr.bounds.centerX(), ocr.bounds.centerY())
+            log("点击领取每日肥料")
+        }
+    })
+
     sleep(1000 / speed)
     common.clickUiObject(className("android.widget.Image").depth(13).clickable().indexInParent(2).findOne());
     sleep(1500 / speed);
