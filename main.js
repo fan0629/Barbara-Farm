@@ -91,10 +91,10 @@ logInfo('解锁成功')
 let executeArguments = engines.myEngine().execArgv
 debugInfo(['启动参数：{}', JSON.stringify(executeArguments)])
 // 定时启动的任务, 将截图权限滞后请求
-if (!executeArguments.intent || executeArguments.executeByDispatcher) {
+//if (!executeArguments.intent || executeArguments.executeByDispatcher) {
   commonFunctions.requestScreenCaptureOrRestart()
   commonFunctions.ensureDeviceSizeValid()
-}
+//}
 // 初始化悬浮窗
 if (!FloatyInstance.init()) {
   runningQueueDispatcher.removeRunningTask()
@@ -118,8 +118,8 @@ if (config.develop_mode) {
   try {
     mainExecutor.exec()
   } catch (e) {
-    commonFunctions.setUpAutoStart(1)
-    errorInfo('执行异常, 1分钟后重新开始' + e)
+    commonFunctions.setUpAutoStart(10)
+    errorInfo('执行异常, 10分钟后重新开始' + e)
     commonFunctions.printExceptionStack(e)
   }
 }

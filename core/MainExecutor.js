@@ -53,7 +53,9 @@ function main() {
     let img = captureScreen();
     let result = $mlKitOcr.detect(img)
     result.forEach((ocr) => {
-        if(ocr.label.includes("点击领取") || ocr.label.includes("点击領取")) {
+        if(ocr.label.includes("点击领取")
+        || ocr.label.includes("点击領取")
+        || ocr.label.includes("点击颌取")) {
             click(ocr.bounds.centerX(), ocr.bounds.centerY())
         }
     })
@@ -71,12 +73,16 @@ function main() {
     common.clickByText("立即施肥", 1000)
     sleep(1000 / speed);
     for (let i = 0; i < 4; i++) {
-        let parent = className("android.widget.Button").depth(18).textMatches(/去浏览|去完成|去逛逛/).findOne().parent().parent();
+        let parent = className("android.widget.Button").depth(18).textMatches(/去浏览|去完成|去逛逛|去看看/).findOne().parent().parent();
         parent.children().forEach((child, index) => {
             if (index % 4 !== 2 || index + 2 >= parent.children().size()) {
                 return;
             }
-            let task_btn = parent.child(child.indexInParent() + 2).findOne(textMatches(/去浏览|去完成|去逛逛/));
+            let obj = parent.child(child.indexInParent() + 2)
+            if (obj == null) {
+                return;
+            }
+            let task_btn = obj.findOne(textMatches(/去浏览|去完成|去逛逛|去看看/));
             let task_info = child.text().trim();
             if (task_info === "" ||
                 task_info.includes("逛逛淘宝芭芭农场 (0/1)") ||
@@ -86,7 +92,7 @@ function main() {
                 task_info.includes(" 看精选商品得1500肥料 (3/3)")) {
                 return;
             }
-            toastLog(task_info)
+            log(task_info)
             switch (task_info) {
                 case "逛精选好物得1500肥料 (0/1)":
                 case "逛一逛领1500肥料 (0/3)":
@@ -95,6 +101,7 @@ function main() {
                 case "看精选商品得1500肥料 (0/3)":
                 case "看精选商品得1500肥料 (1/3)":
                 case "看精选商品得1500肥料 (2/3)":
+                case "逛年货节，领500肥料 (0/1)":
                     common.clickUiObject(task_btn);
                     sleep(2500)
                     swipe(500, 1600, 500, 1000, 2000)
@@ -111,7 +118,7 @@ function main() {
                     back();
                     break;
                 default:
-                    toastLog("跳过任务");
+                    log("跳过任务");
                     return;
             }
             sleep(1000 / speed);
@@ -175,8 +182,9 @@ function main() {
     img = captureScreen();
     result = $mlKitOcr.detect(img)
     result.forEach((ocr) => {
-        toastLog(ocr.label)
-        if(ocr.label.includes("点击领取") || ocr.label.includes("点击領取")) {
+        if(ocr.label.includes("点击领取")
+            || ocr.label.includes("点击領取")
+            || ocr.label.includes("点击颌取")) {
             click(ocr.bounds.centerX(), ocr.bounds.centerY())
             log("点击领取每日肥料")
         }
@@ -206,7 +214,7 @@ function main() {
             ) {
                 continue;
             }
-            toastLog(task_info)
+            log(task_info)
             switch (task_info) {
                 case "浏览天天领现金(0/1)":
                     common.clickUiObject(btn)
@@ -410,7 +418,7 @@ function 赚积分() {
     swipe(500, 1700, 500, 1000, 1000);
     sleep(1000 / speed);
     for (var i = 0; i < 8; i++) {
-        let subjectList = textMatches(/\+3|\+1/).find();
+        let subjectList = textMatches(/\+3|\+1|\+5/).find();
         if (i >= subjectList.size()) {
             break;
         }
@@ -448,13 +456,17 @@ function 赚积分() {
                 sleep(1000 / speed);
                 launchApp("支付宝")
                 sleep(16000);
+            } else if (str === "逛网商双12会场领福利"
+                || str === "逛一逛饿了么冬至会场") {
+                common.clickUiObject(task_btn);
+                sleep(2000);
             } else {
                 continue;
             }
             i--;
             sleep(1000 / speed);
             back();
-            sleep(1500 / speed)
+            sleep(1000 / speed)
         }
     }
     swipe(500, 1800, 500, 100, 1000)
@@ -472,15 +484,17 @@ function 施肥() {
     click(500, 400);
     common.clickByText("立即施肥", 2000)
     //className("android.webkit.WebView").findOne().child(0).child(0).child(5).child(0).child(1).click();
-    let teskBtn;
-    if (text("任务列表").exists()) {
-        teskBtn = text("任务列表").findOne();
-    } else {
-        teskBtn = className("android.widget.Image").boundsInside(WIDTH / 2, HEIGHT / 2, WIDTH, HEIGHT).depth(16).untilFind().get(0);
-    }
-    let pointY = teskBtn.bounds().centerY()
+    let img = captureScreen();
+    let result = $mlKitOcr.detect(img)
+    let pointX,pointY
+    result.forEach((ocr) => {
+        if(ocr.label === ("施肥")) {
+            pointX = ocr.bounds.centerX()
+            pointY = ocr.bounds.centerY()
+        }
+    })
     for (let i = 0; i < 200; i++) {
-        click(540, pointY);
+        click(pointX, pointY);
         sleep(700)
         if (text("果树升级啦").exists()) {
             sleep(600)
