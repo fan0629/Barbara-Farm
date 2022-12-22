@@ -335,9 +335,7 @@ function 淘宝助力() {
     }
 
     sleep(3000 / speed);
-    toastLog("1")
     common.clickByDesc("消息");
-    toastLog("2")
     sleep(2000 / speed)
     common.clickByText("淘宝种树群", 2000 / speed);
     common.clickByDesc("淘宝种树群", 3000 / speed);
