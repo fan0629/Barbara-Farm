@@ -53,9 +53,9 @@ function main() {
     let img = captureScreen();
     let result = $mlKitOcr.detect(img)
     result.forEach((ocr) => {
-        if(ocr.label.includes("点击领取")
-        || ocr.label.includes("点击領取")
-        || ocr.label.includes("点击颌取")) {
+        if (ocr.label.includes("点击领取")
+            || ocr.label.includes("点击領取")
+            || ocr.label.includes("点击颌取")) {
             click(ocr.bounds.centerX(), ocr.bounds.centerY())
         }
     })
@@ -182,7 +182,7 @@ function main() {
     img = captureScreen();
     result = $mlKitOcr.detect(img)
     result.forEach((ocr) => {
-        if(ocr.label.includes("点击领取")
+        if (ocr.label.includes("点击领取")
             || ocr.label.includes("点击領取")
             || ocr.label.includes("点击颌取")) {
             click(ocr.bounds.centerX(), ocr.bounds.centerY())
@@ -455,16 +455,19 @@ function 赚积分() {
                 launchApp("支付宝")
                 sleep(16000);
             } else if (str === "逛网商双12会场领福利"
-                || str === "逛一逛饿了么冬至会场") {
+                || str === "逛一逛饿了么冬至会场"
+                || str === "逛一逛淘宝芭芭农场") {
                 common.clickUiObject(task_btn);
                 sleep(2000);
             } else {
                 continue;
             }
             i--;
-            sleep(1000 / speed);
-            back();
-            sleep(1000 / speed)
+            do {
+                sleep(1000 / speed);
+                back();
+                sleep(1000 / speed)
+            } while (!id("com.alipay.mobile.nebula:id/h5_tv_title").text("会员签到赚积分").exists())
         }
     }
     swipe(500, 1800, 500, 100, 1000)
@@ -484,9 +487,9 @@ function 施肥() {
     //className("android.webkit.WebView").findOne().child(0).child(0).child(5).child(0).child(1).click();
     let img = captureScreen();
     let result = $mlKitOcr.detect(img)
-    let pointX,pointY
+    let pointX, pointY
     result.forEach((ocr) => {
-        if(ocr.label === ("施肥")) {
+        if (ocr.label === ("施肥")) {
             pointX = ocr.bounds.centerX()
             pointY = ocr.bounds.centerY()
         }
