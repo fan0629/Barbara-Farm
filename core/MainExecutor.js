@@ -371,6 +371,7 @@ function 淘宝助力() {
     common.clickByDesc("消息");
     sleep(1000 / speed)
     common.clickUiObject(desc("淘宝种树群").findOne().parent());
+    sleep(1500 / speed)
 
     let uiObjects = id("com.taobao.taobao:id/chat_msg_item_wrapper")
         .untilFind()
@@ -380,8 +381,7 @@ function 淘宝助力() {
             .get(i)
         if (uiObject.findOne(id("com.taobao.taobao:id/user_head_layout")).bounds().centerX() < WIDTH / 2) {
             let btn = uiObject
-                .findOne(desc("拜托帮我助力一下吧～你也可以领免费水果！"))
-                .parent();
+                .findOne(desc("拜托帮我助力一下吧～你也可以领免费水果！"));
             sleep(1000 / speed);
             common.clickUiObject(btn);
             sleep(1500 / speed);
@@ -400,7 +400,7 @@ function 支付宝助力() {
     sleep(3000 / speed);
     common.clickByTextMatches(/消息|朋友/);
     common.clickByText("种树群");
-    
+    sleep(1500 / speed)
     let uiObjects = id("com.alipay.mobile.chatapp:id/chat_msg_layout")
         .untilFind()
     for (var i = 0; i < uiObjects.length; i++) {
@@ -409,8 +409,7 @@ function 支付宝助力() {
             .get(i)
         if (uiObject.findOne(id("com.alipay.mobile.chatapp:id/chat_msg_avatar_layout")).bounds().centerX() < WIDTH / 2) {
             let btn = uiObject
-                .findOne(text("帮我助力，你也有奖励"))
-                .parent();
+                .findOne(text("帮我助力，你也有奖励"));
             sleep(1000 / speed);
             common.clickUiObject(btn);
             sleep(1500 / speed);
@@ -535,23 +534,17 @@ function 赚积分() {
 function 施肥() {
     sleep(2000 / speed);
     common.clickByText("收下继续施肥", 2000)
-    let flag = common.clickByText("继续赚肥料", 5000 / speed)
-    if (flag) {
-        sleep(1000 / speed);
-        common.clickUiObject(className("android.view.View").clickable().depth(16).untilFind().get(0));
+    common.clickByText("继续赚肥料", 2000 / speed)
+    if (textMatches(/领取|已领取/).exists()) {
+        common.clickByText("任务列表");
     }
+    sleep(1000 / speed)
     click(540, 1888);
     common.clickByText("立即施肥", 2000)
-    //className("android.webkit.WebView").findOne().child(0).child(0).child(5).child(0).child(1).click();
-    let img = captureScreen();
-    let result = $mlKitOcr.detect(img)
+
     let pointX, pointY
-    result.forEach((ocr) => {
-        if (ocr.label === ("施肥")) {
-            pointX = ocr.bounds.centerX()
-            pointY = ocr.bounds.centerY()
-        }
-    })
+    pointX = 540
+    pointY = text("任务列表").findOne().bounds.centerY()
     for (let i = 0; i < 200; i++) {
         click(pointX, pointY);
         sleep(500)
