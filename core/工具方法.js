@@ -20,15 +20,16 @@ var common = {
         }
 
         var uiObjectParent = uiObject.parent();
-        let i = 0
-        while (i ++ < 3) {
-            if (uiObjectParent.clickable()) {
-                log("点击 " + (uiObject.text() === "" ? uiObject.desc() : uiObject.text()) + " 父控件");
-                return uiObjectParent.click();
+        if (uiObjectParent != null) {
+            let i = 0
+            while (i++ < 3) {
+                if (uiObjectParent.clickable()) {
+                    log("点击 " + (uiObject.text() === "" ? uiObject.desc() : uiObject.text()) + " 父控件");
+                    return uiObjectParent.click();
+                }
+                uiObjectParent = uiObjectParent.parent();
             }
-            uiObjectParent = uiObjectParent.parent();
         }
-
         sleep(1000);
         let b = uiObject.bounds();
         log("点击 " + (uiObject.text() === "" ? uiObject.desc() : uiObject.text()) + " 坐标");
