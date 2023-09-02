@@ -36,19 +36,26 @@ function main() {
             }
         }, 4000 / speed)
     })
+    threads.start(function() {
+        setTimeout(function() {
+                toastLog("脚本超时退出");
+                exit();
+            },
+            960000 / speed);
+    });
     set = storage.get(nowDate, set);
     if (set.indexOf("淘宝助力完成") === -1) {
         淘宝助力();
     }
     if (set.indexOf("支付宝助力完成") === -1) {
-        支付宝助力();
+        //支付宝助力();
     }
     launchApp("支付宝");
     log("打开支付宝");
     sleep(1000 / speed)
 
     if (set.indexOf("每日签到完成") === -1) {
-        //每日签到()
+        每日签到()
     }
 
     common.clickByText("首页", 2000 / speed);
@@ -69,7 +76,7 @@ function main() {
     sleep(1000 / speed);
     common.clickByText("去领更多肥料", 1000);
     sleep(1000 / speed)
-    if (!textMatches(/领取|已领取/).exists()) {
+    if (!textMatches(/领取|已领取|已完成/).exists()) {
         if (text("任务列表").exists()) {
             common.clickByText("任务列表");
         } else {
@@ -79,6 +86,7 @@ function main() {
     common.clickByText("立即施肥", 1000)
     sleep(1000 / speed);
     for (let i = 0; i < 4; i++) {
+        log("第"+i+"次循环")
         let parent = className("android.widget.Button").depth(18).textMatches(/去浏览|去完成|去逛逛|去看看/).findOne().parent().parent();
         parent.children().forEach((child, index) => {
             if (index % 4 !== 2 || index + 2 >= parent.children().size()) {
@@ -88,14 +96,19 @@ function main() {
             if (obj == null) {
                 return;
             }
-            let task_btn = obj.findOne(textMatches(/去浏览|去完成|去逛逛|去看看/));
+            let task_btn = obj.findOne(textMatches(/去浏览|去完成|去逛逛|去看看|去观看/));
             let task_info = child.text().trim();
             if (task_info === "" ||
-                task_info.includes("逛逛淘宝芭芭农场 (0/1)") ||
-                task_info.includes("逛精选好物得1500肥料 (1/1)") ||
-                task_info.includes("逛一逛领1500肥料 (3/3)") ||
-                task_info.includes("去淘特领好礼 (0/1)") ||
-                task_info.includes("看精选商品得1500肥料 (3/3)")) {
+                task_info.includes("逛逛淘宝芭芭农场") ||
+                task_info.includes("(1/1)") ||
+                task_info.includes("(3/3)") ||
+                task_info.includes("购买商品得20000肥料") ||
+                task_info.includes("蚂蚁庄园小鸡肥料") ||
+                task_info.includes("新玩法大量肥料待赚取") ||
+                task_info.includes("去森林领落叶肥料") ||
+                task_info.includes("分享给好友") ||
+                task_info.includes("限时得余额宝肥料") ||
+                task_info.includes("合种队伍今日达2人施肥")){
                 return;
             }
             log(task_info)
@@ -109,12 +122,21 @@ function main() {
                 case "看精选商品得1500肥料 (2/3)":
                 case "逛年货节，领500肥料 (0/1)":
                 case "逛好物最高得2000肥料 (0/1)":
+                case "逛助农好货得肥料 (0/1)":
+                case "去看看你的水果产地 (0/1)":
                     common.clickUiObject(task_btn);
-                    sleep(1500)
-                    swipe(500, 1600, 500, 1000, 15000)
+                    sleep(2000)
+                    swipe(500, 1600, 500, 800, 7000)
+                    sleep(1000)
+                    swipe(500, 800, 500, 1600, 7000)
                     textContains("浏览完成，现在下单").findOne(2000 / speed);
                     sleep(800);
-                    back();
+                    for (j = 0; j < 3; j++) {
+                        if (!textMatches(/领取|已领取/).exists()) {
+                            back();
+                            sleep(1000)
+                        }
+                    }
                     break;
                 case "逛逛花呗翻翻卡 (0/1)":
                 case "逛一逛芝麻分 (0/1)":
@@ -122,6 +144,8 @@ function main() {
                 case "逛逛UC浏览器得肥料 (0/1)":
                 case "去天猫攒福气兑红包 (0/1)":
                 case "看助农故事领100肥料 (0/1)":
+                case "逛一逛小荷包 (0/1)":
+                case "去积攒芝麻粒 (0/1)":
                     common.clickUiObject(task_btn);
                     sleep(2000 / speed);
                     back();
@@ -133,7 +157,6 @@ function main() {
                     break;
                 default:
                     log("跳过任务");
-                    return;
             }
             sleep(1000 / speed);
         })
@@ -157,13 +180,15 @@ function main() {
         sleep(1000 / speed)
         launchApp("淘宝")
     } else {
+        sleep(1000 / speed);
+        common.killApp("淘宝");
         launchApp("淘宝");
     }
     if (id("android.miui:id/app1").findOne(3000 / speed)) {
         id("android.miui:id/app1").findOne().click();
     }
     sleep(1000 / speed)
-    log("进入淘宝芭芭农场");
+    console.info("进入淘宝芭芭农场");
     common.clickByDesc("首页", 1000 / sleep)
     while (!text("芭芭农场").exists()) {
         swipe(500, 800, 500, 1200, 1000)
@@ -204,7 +229,7 @@ function main() {
     })
 
     sleep(1000 / speed)
-    common.clickUiObject(className("android.widget.Image").depth(13).clickable().indexInParent(2).findOne());
+    common.clickUiObject(text("集肥料").className("android.widget.Button").findOne())
     sleep(1500 / speed);
     common.clickByText("去签到", 1000);
     swipe(500, 1800, 500, 1200, 1000);
@@ -292,14 +317,14 @@ function main() {
                         common.clickByText("下载/打开APP", 2000, false);
                         sleep(500);
                         common.clickUiObject(id("com.taobao.taobao:id/confirm_yes").findOne(1000));
-                        sleep(5000);
+                        sleep(6000);
                         common.killApp("点淘")
-                        sleep(3000 / speed);
+                        sleep(1000 / speed);
                     } else {
                         toastLog("未安装点淘app");
                     }
                     sleep(1000 / speed);
-                    if (!text("去完成").exists()) {
+                    while (!text("去完成").exists()) {
                         back();
                         sleep(1000);
                     }
@@ -339,8 +364,8 @@ function main() {
                 default:
                     if (btn_text === "去浏览") {
                         common.clickUiObject(btn);
-                        sleep(15000);
-                        textContains("全部完成啦").findOne(5000 / speed);
+                        sleep(1500 / speed);
+                        swipe(500, 1700, 500, 400, 16000);
                         sleep(1500 / speed);
                         back();
                         sleep(1000);
@@ -354,7 +379,7 @@ function main() {
     }
 
     if (text("逛逛支付宝芭芭农场(0/1)").exists()) {
-        common.clickUiObject(text("逛逛支付宝芭芭农场(0/1)").findOne().parent().parent());
+        common.clickUiObject(text("逛逛支付宝芭芭农场(0/1)").findOne());
     } else {
         common.clickByText("跳转链接")
     }
@@ -370,20 +395,21 @@ function 淘宝助力() {
     sleep(1000 / speed);
     common.clickByDesc("消息");
     sleep(1000 / speed)
-    common.clickUiObject(desc("淘宝种树群").findOne().parent());
+    common.clickUiObject(text("扬: 这个分享不错哦").findOne());
     sleep(1500 / speed)
+    if(desc("淘宝种树群").exists()) {
+        let b = desc("淘宝种树群").findOne().bounds()
+         click(b.centerX(), b.centerY())
+    }
 
-    let uiObjects = id("com.taobao.taobao:id/chat_msg_item_wrapper")
-        .untilFind()
+    let uiObjects = text("拜托帮我助力一下吧～你也可以领免费水果！").untilFind()
     for (var i = 0; i < uiObjects.length; i++) {
-        var uiObject = id("com.taobao.taobao:id/chat_msg_item_wrapper")
+        var uiObject = text("拜托帮我助力一下吧～你也可以领免费水果！")
             .untilFind()
             .get(i)
-        if (uiObject.findOne(id("com.taobao.taobao:id/user_head_layout")).bounds().centerX() < WIDTH / 2) {
-            let btn = uiObject
-                .findOne(desc("拜托帮我助力一下吧～你也可以领免费水果！"));
+        if (uiObject.bounds().centerX() < WIDTH / 2) {
             sleep(1000 / speed);
-            common.clickUiObject(btn);
+            common.clickUiObject(uiObject);
             sleep(1500 / speed);
             common.clickByText("立即助力");
             sleep(1000 / speed);
@@ -401,17 +427,14 @@ function 支付宝助力() {
     common.clickByTextMatches(/消息|朋友/);
     common.clickByText("种树群");
     sleep(1500 / speed)
-    let uiObjects = id("com.alipay.mobile.chatapp:id/chat_msg_layout")
-        .untilFind()
+    let uiObjects = text("帮我助力，你也有奖励").untilFind()
     for (var i = 0; i < uiObjects.length; i++) {
-        var uiObject = id("com.alipay.mobile.chatapp:id/chat_msg_layout")
+        var uiObject = text("帮我助力，你也有奖励")
             .untilFind()
             .get(i)
-        if (uiObject.findOne(id("com.alipay.mobile.chatapp:id/chat_msg_avatar_layout")).bounds().centerX() < WIDTH / 2) {
-            let btn = uiObject
-                .findOne(text("帮我助力，你也有奖励"));
+        if (uiObject.bounds().centerX() < WIDTH / 2) {
             sleep(1000 / speed);
-            common.clickUiObject(btn);
+            common.clickUiObject(uiObject);
             sleep(1500 / speed);
             common.clickByText("为Ta助力");
             sleep(1000 / speed);
@@ -515,28 +538,30 @@ function 赚积分() {
                 sleep(2000);
             } else if (str === "逛一逛淘宝芭芭农场") {
                 common.clickUiObject(task_btn);
-                sleep(5000)
+                sleep(9000)
                 common.killApp("淘宝");
             } else {
                 continue;
             }
-            i--;
             sleep(1000 / speed);
             back();
             sleep(1000 / speed)
         }
     }
-    swipe(500, 1800, 500, 100, 1000)
-    swipe(500, 1800, 500, 100, 1000)
-    sleep(18000)
+    swipe(500, 1700, 500, 200, 1000)
+    swipe(500, 1700, 500, 200, 1000)
+    swipe(500, 1700, 500, 200, 9000)
+    swipe(500, 1700, 500, 200, 9000)
+    sleep(1000)
 }
 
 function 施肥() {
     sleep(2000 / speed);
     common.clickByText("收下继续施肥", 2000)
     common.clickByText("继续赚肥料", 2000 / speed)
+    sleep(2000 /speed)
     if (textMatches(/领取|已领取/).exists()) {
-        common.clickByText("任务列表");
+        common.clickUiObject(className("android.widget.Button").text("关闭").findOne());
     }
     sleep(1000 / speed)
     click(540, 1888);
@@ -544,7 +569,7 @@ function 施肥() {
 
     let pointX, pointY
     pointX = 540
-    pointY = text("任务列表").findOne().bounds.centerY()
+    pointY = text("任务列表").findOne().bounds().centerY()
     for (let i = 0; i < 200; i++) {
         click(pointX, pointY);
         sleep(500)
@@ -557,13 +582,22 @@ function 施肥() {
             sleep(600)
             common.clickByText("立即领奖", 1000)
             sleep(600)
-            common.clickByTextMatches(/收下去施肥|立即领取/, 1000)
+            common.clickByTextMatches(/收下去施肥|立即领取|收下继续施肥/, 1000)
             sleep(600)
-            common.clickByTextMatches(/收下去施肥|立即领取/, 1000)
+            common.clickByTextMatches(/收下去施肥|立即领取|收下继续施肥/, 1000)
             sleep(600)
         }
-        if (textMatches(/领取|已领取/).exists()) {
+        if (text("收下继续施肥").exists()) {
+            common.clickByText("收下继续施肥");
+            sleep(1000);
+        }
+        
+        if (textMatches(/领取|已领取|已完成/).exists()) {
             break
+        }
+        if (text("关闭").exists()) {
+            common.clickByText("关闭");
+            sleep(1000);
         }
     }
     toastLog("施肥完成")
