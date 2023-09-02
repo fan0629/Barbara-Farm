@@ -14,6 +14,7 @@ module.exports = {
 
 function main() {
     common.killApp("支付宝")
+    common.killApp("淘宝")
     threads.start(function() {
         setInterval(function() {
             if (id("com.taobao.taobao:id/update_contentDialog").findOnce()) {
@@ -48,7 +49,7 @@ function main() {
         淘宝助力();
     }
     if (set.indexOf("支付宝助力完成") === -1) {
-        //支付宝助力();
+        支付宝助力();
     }
     launchApp("支付宝");
     log("打开支付宝");
@@ -63,16 +64,10 @@ function main() {
     common.clickUiObject(uiObject);
     text("🇨🇳🏅+…").findOne(4000 / speed);
     sleep(1000 / speed)
-    let img = captureScreen();
-    let result = $mlKitOcr.detect(img)
-    result.forEach((ocr) => {
-        if (ocr.label.includes("点击领取") ||
-            ocr.label.includes("点击領取") ||
-            ocr.label.includes("点击颌取")) {
-            click(ocr.bounds.centerX(), ocr.bounds.centerY())
-        }
-    })
-
+    if (text("任务列表").exists()) {
+        let b = text("任务列表").findOne()
+        click(b.bounds().centerX(), b.bounds().centerY() - 200)
+    }
     sleep(1000 / speed);
     common.clickByText("去领更多肥料", 1000);
     sleep(1000 / speed)
@@ -86,7 +81,7 @@ function main() {
     common.clickByText("立即施肥", 1000)
     sleep(1000 / speed);
     for (let i = 0; i < 4; i++) {
-        log("第"+i+"次循环")
+        log("第" + i + "次循环")
         let parent = className("android.widget.Button").depth(18).textMatches(/去浏览|去完成|去逛逛|去看看/).findOne().parent().parent();
         parent.children().forEach((child, index) => {
             if (index % 4 !== 2 || index + 2 >= parent.children().size()) {
@@ -108,7 +103,7 @@ function main() {
                 task_info.includes("去森林领落叶肥料") ||
                 task_info.includes("分享给好友") ||
                 task_info.includes("限时得余额宝肥料") ||
-                task_info.includes("合种队伍今日达2人施肥")){
+                task_info.includes("合种队伍今日达2人施肥")) {
                 return;
             }
             log(task_info)
@@ -124,6 +119,8 @@ function main() {
                 case "逛好物最高得2000肥料 (0/1)":
                 case "逛助农好货得肥料 (0/1)":
                 case "去看看你的水果产地 (0/1)":
+                case "逛内蒙好货领300肥料 (0/1)":
+                case "探寻内蒙旅行好去处 (0/1)":
                     common.clickUiObject(task_btn);
                     sleep(2000)
                     swipe(500, 1600, 500, 800, 7000)
@@ -154,11 +151,11 @@ function main() {
                     uiObjs.forEach(uiObj => {
                         common.clickUiObject(uiObj);
                     });
+                    sleep(1000 / speed);
                     break;
                 default:
                     log("跳过任务");
             }
-            sleep(1000 / speed);
         })
     }
     let uiObjs = text("领取").find();
@@ -169,16 +166,18 @@ function main() {
     if (textContains("逛逛淘宝芭芭农场 (0/1)").exists()) {
         let task = textContains("逛逛淘宝芭芭农场 (0/1)").findOnce();
         let index = task.indexInParent();
-        let btn = className("android.view.View").depth(17).indexInParent(index + 2).findOne().child(0);
-        common.clickUiObject(btn);
-        if (id("android.miui:id/app1").findOne(3000 / speed)) {
-            id("android.miui:id/app1").findOne().click();
+        let btn = className("android.view.View").depth(17).indexInParent(index + 2).findOne(2000);
+        if (btn != null) {
+            common.clickUiObject(btn.child(0));
+            if (id("android.miui:id/app1").findOne(3000 / speed)) {
+                id("android.miui:id/app1").findOne().click();
+            }
+            text("900肥料已到账，加油赚更多！").findOne(8000);
+            sleep(1000 / speed);
+            common.killApp("淘宝");
+            sleep(1000 / speed)
+            launchApp("淘宝")
         }
-        text("900肥料已到账，加油赚更多！").findOne(8000);
-        sleep(1000 / speed);
-        common.killApp("淘宝");
-        sleep(1000 / speed)
-        launchApp("淘宝")
     } else {
         sleep(1000 / speed);
         common.killApp("淘宝");
@@ -395,11 +394,13 @@ function 淘宝助力() {
     sleep(1000 / speed);
     common.clickByDesc("消息");
     sleep(1000 / speed)
-    common.clickUiObject(text("扬: 这个分享不错哦").findOne());
-    sleep(1500 / speed)
-    if(desc("淘宝种树群").exists()) {
+    if (desc("淘宝种树群").exists()) {
         let b = desc("淘宝种树群").findOne().bounds()
-         click(b.centerX(), b.centerY())
+        click(b.centerX(), b.centerY())
+    }
+    if (text("淘宝种树群").exists()) {
+        let b = text("淘宝种树群").findOne().bounds()
+        click(b.centerX(), b.centerY())
     }
 
     let uiObjects = text("拜托帮我助力一下吧～你也可以领免费水果！").untilFind()
@@ -559,7 +560,7 @@ function 施肥() {
     sleep(2000 / speed);
     common.clickByText("收下继续施肥", 2000)
     common.clickByText("继续赚肥料", 2000 / speed)
-    sleep(2000 /speed)
+    sleep(2000 / speed)
     if (textMatches(/领取|已领取/).exists()) {
         common.clickUiObject(className("android.widget.Button").text("关闭").findOne());
     }
@@ -591,12 +592,12 @@ function 施肥() {
             common.clickByText("收下继续施肥");
             sleep(1000);
         }
-        
-        if (textMatches(/领取|已领取|已完成/).exists()) {
-            break
-        }
         if (text("关闭").exists()) {
-            common.clickByText("关闭");
+            sleep(2000)
+            if (textMatches(/领取|已领取|已完成/).exists()) {
+                break
+            }
+            common.clickByText("关闭", 1000);
             sleep(1000);
         }
     }
