@@ -9,6 +9,7 @@ let { config } = require('./config.js')(runtime, this)
 const resolver = require('./lib/AutoJSRemoveDexResolver.js')
 let singletonRequire = require('./lib/SingletonRequirer.js')(runtime, this)
 let runningQueueDispatcher = singletonRequire('RunningQueueDispatcher')
+let automator = singletonRequire('Automator')
 let { logInfo, errorInfo, warnInfo, debugInfo, infoLog, debugForDev, flushAllLogs } = singletonRequire('LogUtils')
 let FloatyInstance = singletonRequire('FloatyUtil')
 let commonFunctions = singletonRequire('CommonFunction')
@@ -73,6 +74,10 @@ logInfo(['AutoJS version: {}', app.autojs.versionName])
 logInfo(['device info: {} {} {}', device.brand, device.product, device.release])
 
 logInfo(['设备分辨率：[{}, {}]', config.device_width, config.device_height])
+
+commonFunctions.requestScreenCaptureOrRestart()
+  commonFunctions.ensureDeviceSizeValid()
+
 logInfo('======解锁并校验截图权限======')
 try {
   unlocker.exec()
@@ -89,12 +94,12 @@ logInfo('解锁成功')
 
 // 请求截图权限
 let executeArguments = engines.myEngine().execArgv
-debugInfo(['启动参数：{}', JSON.stringify(executeArguments)])
+//debugInfo(['启动参数：{}', JSON.stringify(executeArguments)])
 // 定时启动的任务, 将截图权限滞后请求
 //if (!executeArguments.intent || executeArguments.executeByDispatcher) {
   commonFunctions.requestScreenCaptureOrRestart()
   commonFunctions.ensureDeviceSizeValid()
-//}
+/{}
 // 初始化悬浮窗
 if (!FloatyInstance.init()) {
   runningQueueDispatcher.removeRunningTask()
