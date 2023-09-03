@@ -394,6 +394,7 @@ function 淘宝助力() {
     sleep(1000 / speed);
     common.clickByDesc("消息");
     sleep(1000 / speed)
+    common.clickByDesc("淘宝种树群", 1000);
     if (desc("淘宝种树群").exists()) {
         let b = desc("淘宝种树群").findOne().bounds()
         click(b.centerX(), b.centerY())
